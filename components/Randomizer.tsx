@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, View, Text, StyleSheet } from 'react-native';
+import { Button, View, Text, StyleSheet, Picker } from 'react-native';
 import Character from './Character';
 import constants from '../constants';
 
@@ -19,35 +19,61 @@ export default class Randomizer extends Component<{}, State> {
 	state = {
 		player1: [],
 		player2: [],
-		neccessaryCharacter: ''
+		neccessaryCharacter: constants.characters[Math.floor(Math.random() * constants.characters.length)].name
 	};
 
 	componentDidMount = () => {
-		this.randomize();
+		this.randomizeCharacters();
 	};
 
-	randomize = () => {
+	onChangeNeccessaryCharacter = (text: String) => {
 		this.setState({
-			player1: this.randomCharacters(),
-			player2: this.randomCharacters()
+			neccessaryCharacter: text
 		});
 	};
 
-	randomCharacters = (): Array<CharacterObject> => {
-		const characterList = [];
-		for (let i = 0; i < Randomizer.numOfRandoms; i++) {
-			const characterObj = constants.characters[Math.floor(Math.random() * constants.characters.length)];
-			characterList.push(characterObj);
-		}
+	randomizeCharacters = () => {
+		const player1CharacterList = [];
+		const player2CharacterList = [];
+		let allCharacterNames = [];
+		// Generate a with numOfRandom characters and the neccessary character as at least one of them
+		do {
+			player1CharacterList.splice(0);
+			player2CharacterList.splice(0);
 
-		return characterList;
+			for (let i = 0; i < 2 * Randomizer.numOfRandoms; i++) {
+				const characterObj = constants.characters[Math.floor(Math.random() * constants.characters.length)];
+
+				// Alternate between players
+				if (i % 2 == 0) {
+					player1CharacterList.push(characterObj);
+				} else {
+					player2CharacterList.push(characterObj);
+				}
+
+				allCharacterNames.push(characterObj.name);
+			}
+		} while (!allCharacterNames.includes(this.state.neccessaryCharacter));
+
+		this.setState({
+			player1: player1CharacterList,
+			player2: player2CharacterList
+		});
 	};
 
-	renderRandomButton = (): JSX.Element => {
+	renderInputs = (): JSX.Element => {
 		return (
 			<View style={styles.buttonWrapper}>
 				<View style={styles.button}>
-					<Button onPress={this.randomize} title="Random!" />
+					<Picker
+						selectedValue={this.state.neccessaryCharacter}
+						style={{ height: 50, width: 300 }}
+						onValueChange={this.onChangeNeccessaryCharacter}>
+						{constants.characters.map((c, index) => {
+							return <Picker.Item key={c.name + index} label={`${c.name}`} value={`${c.name}`} />;
+						})}
+					</Picker>
+					<Button onPress={this.randomizeCharacters} title="Random!" />
 				</View>
 			</View>
 		);
@@ -69,7 +95,7 @@ export default class Randomizer extends Component<{}, State> {
 	render = () => {
 		return (
 			<View style={styles.container}>
-				{this.renderRandomButton()}
+				{this.renderInputs()}
 				<View style={styles.characterColumns}>
 					{this.renderPlayerCharacters('Player 1', this.state.player1)}
 					{this.renderPlayerCharacters('Player 2', this.state.player2)}
