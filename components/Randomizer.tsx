@@ -64,15 +64,12 @@ export default class Randomizer extends Component<{}, State> {
 	renderInputs = (): JSX.Element => {
 		return (
 			<View style={styles.buttonWrapper}>
+				<Picker selectedValue={this.state.neccessaryCharacter} style={styles.picker} onValueChange={this.onChangeNeccessaryCharacter}>
+					{constants.characters.map((c, index) => {
+						return <Picker.Item key={c.name + index} label={`${c.name}`} value={`${c.name}`} />;
+					})}
+				</Picker>
 				<View style={styles.button}>
-					<Picker
-						selectedValue={this.state.neccessaryCharacter}
-						style={{ height: 50, width: 300 }}
-						onValueChange={this.onChangeNeccessaryCharacter}>
-						{constants.characters.map((c, index) => {
-							return <Picker.Item key={c.name + index} label={`${c.name}`} value={`${c.name}`} />;
-						})}
-					</Picker>
 					<Button onPress={this.randomizeCharacters} title="Random!" />
 				</View>
 			</View>
@@ -127,5 +124,9 @@ const styles = StyleSheet.create({
 	},
 	playerName: {
 		textAlign: 'center'
+	},
+	picker: {
+		height: 50,
+		width: 175
 	}
 });
