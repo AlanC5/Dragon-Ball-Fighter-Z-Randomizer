@@ -63,7 +63,7 @@ export default class Randomizer extends Component<{}, State> {
 
 	renderInputs = (): JSX.Element => {
 		return (
-			<View style={styles.buttonWrapper}>
+			<View style={styles.randomButtonWrapper}>
 				<Picker selectedValue={this.state.neccessaryCharacter} style={styles.picker} onValueChange={this.onChangeNeccessaryCharacter}>
 					{constants.characters.map((c, index) => {
 						return <Picker.Item key={c.name + index} label={`${c.name}`} value={`${c.name}`} />;
@@ -107,14 +107,16 @@ const styles = StyleSheet.create({
 		width: '100%',
 		justifyContent: 'center'
 	},
-	buttonWrapper: {
+	randomButtonWrapper: {
 		flex: 1,
 		flexDirection: 'row',
-		justifyContent: 'center',
-		marginTop: 50
+		justifyContent: 'space-between',
+		marginTop: 50,
+		marginLeft: 10,
+		marginRight: 10
 	},
 	button: {
-		width: 200
+		width: 150
 	},
 	characterColumns: {
 		flexDirection: 'row',
