@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button, View, Text, StyleSheet, Picker } from 'react-native';
+import io from 'socket.io-client';
 import Character from './Character';
 import constants from '../constants';
 
@@ -16,6 +17,10 @@ export interface State {
 
 export default class Randomizer extends Component<{}, State> {
 	static numOfRandoms = 4;
+	static socket = null;
+	static joinRoomEvent = 'joinDBZ';
+	static room = 'CandA5Ever'; // We need a screen to allow text entry
+	static listenRandomEvent = 'random';
 	state = {
 		player1: [],
 		player2: [],
@@ -23,7 +28,38 @@ export default class Randomizer extends Component<{}, State> {
 	};
 
 	componentDidMount = () => {
+		Randomizer.socket = io('https://dragon-ball-fighterz-random.herokuapp.com/');
+		Randomizer.socket.emit(Randomizer.joinRoomEvent, Randomizer.room);
+
+		Randomizer.socket.on(Randomizer.listenRandomEvent, msg => {
+			this.setState({
+				player1: msg.player1,
+				player2: msg.player2
+			});
+		});
+
 		this.randomizeCharacters();
+
+		const randomizeCharacters = {
+			room: Randomizer.room,
+			player1: [
+				{
+					name: 'Android 16'
+				},
+				{
+					name: 'Android 17'
+				}
+			],
+			player2: [
+				{
+					name: 'Android 18'
+				},
+				{
+					name: 'Android 21'
+				}
+			]
+		};
+		Randomizer.socket.emit('random', randomizeCharacters);
 	};
 
 	onChangeNeccessaryCharacter = (text: String) => {
@@ -55,10 +91,12 @@ export default class Randomizer extends Component<{}, State> {
 			}
 		} while (!allCharacterNames.includes(this.state.neccessaryCharacter));
 
-		this.setState({
+		const randomizeCharacters = {
+			room: Randomizer.room,
 			player1: player1CharacterList,
 			player2: player2CharacterList
-		});
+		};
+		Randomizer.socket.emit('random', randomizeCharacters);
 	};
 
 	renderInputs = (): JSX.Element => {
