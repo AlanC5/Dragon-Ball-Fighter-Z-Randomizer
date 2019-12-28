@@ -39,27 +39,6 @@ export default class Randomizer extends Component<{}, State> {
 		});
 
 		this.randomizeCharacters();
-
-		const randomizeCharacters = {
-			room: Randomizer.room,
-			player1: [
-				{
-					name: 'Android 16'
-				},
-				{
-					name: 'Android 17'
-				}
-			],
-			player2: [
-				{
-					name: 'Android 18'
-				},
-				{
-					name: 'Android 21'
-				}
-			]
-		};
-		Randomizer.socket.emit('random', randomizeCharacters);
 	};
 
 	onChangeNeccessaryCharacter = (text: String) => {
